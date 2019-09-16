@@ -46,7 +46,6 @@ public class Event_MessageReceived {
 		}
 
 		// Command
-
 		if (text.equalsIgnoreCase("/ChangeChannel")) {
 			IVoiceState vs = user.getVoiceStateForGuild(event.getGuild());
 			IVoiceChannel vc = vs.getChannel();
@@ -57,6 +56,11 @@ public class Event_MessageReceived {
 				return;
 			}
 			vc.join();
+		} else {
+			IVoiceChannel voice = event.getGuild().getConnectedVoiceChannel();
+			if (voice == null) {
+				Main.channel.join();
+			}
 		}
 		if (text.equalsIgnoreCase("/Clear")) {
 			AudioPlayer audioP = AudioPlayer.getAudioPlayerForGuild(event.getGuild());
@@ -191,10 +195,6 @@ public class Event_MessageReceived {
 			}
 		}
 		AudioPlayer audioP = AudioPlayer.getAudioPlayerForGuild(event.getGuild());
-		IVoiceChannel voice = event.getGuild().getConnectedVoiceChannel();
-		if (voice == null) {
-			Main.channel.join();
-		}
 
 		// 読み上げ
 		List<String> texts = Arrays.stream(args).filter(
