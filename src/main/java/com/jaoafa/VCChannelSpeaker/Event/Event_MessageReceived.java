@@ -3,12 +3,15 @@ package com.jaoafa.VCChannelSpeaker.Event;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.sound.sampled.AudioInputStream;
 
 import com.jaoafa.VCChannelSpeaker.Main;
 import com.jaoafa.VCChannelSpeaker.MuteManager;
+import com.vdurmont.emoji.EmojiParser;
 
 import am.ik.voicetext4j.Emotion;
 import am.ik.voicetext4j.Emotion.Level;
@@ -26,12 +29,21 @@ import sx.blah.discord.util.RequestBuffer;
 import sx.blah.discord.util.audio.AudioPlayer;
 
 public class Event_MessageReceived {
+	String regex = "<a?:(.+?):([0-9]+)>";
+
 	@EventSubscriber
 	public void onMessageReceivedEvent(MessageReceivedEvent event) {
 		IChannel channel = event.getChannel();
 		IUser user = event.getAuthor();
 		IMessage message = event.getMessage();
 		String text = event.getMessage().getFormattedContent();
+		text = EmojiParser.parseToAliases(text);
+		// 鯖絵文字
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(text);
+		while (m.find()) {
+			text = text.replace(m.group(), ":" + m.group(1) + ":");
+		}
 
 		if (channel.getLongID() != 623153228267388958L) {
 			return;
