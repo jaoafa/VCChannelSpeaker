@@ -56,6 +56,7 @@ public class Event_MessageReceived {
 				return;
 			}
 			vc.join();
+			return;
 		} else {
 			IVoiceChannel voice = event.getGuild().getConnectedVoiceChannel();
 			if (voice == null) {
@@ -65,6 +66,7 @@ public class Event_MessageReceived {
 		if (text.equalsIgnoreCase("/Clear")) {
 			AudioPlayer audioP = AudioPlayer.getAudioPlayerForGuild(event.getGuild());
 			audioP.clear();
+			return;
 		}
 
 		String[] args;
@@ -199,7 +201,23 @@ public class Event_MessageReceived {
 		// 読み上げ
 		List<String> texts = Arrays.stream(args).filter(
 				arg -> arg != null && !excludes.contains(arg)).collect(Collectors.toList());
-		AudioInputStream stream = context.getResponse(String.join(" ", texts)).audioInputStream();
-		audioP.queue(stream);
+		if (String.join(" ", texts).contains("\n")) {
+			for (String one : String.join(" ", texts).split("\n")) {
+				if (one.length() < 1 || one.length() > 200) {
+					continue;
+				}
+				AudioInputStream stream = context.getResponse(one).audioInputStream();
+				audioP.queue(stream);
+			}
+		} else {
+			if (String.join(" ", texts).length() < 1 || String.join(" ", texts).length() > 200) {
+				RequestBuffer.request(() -> {
+					message.addReaction(ReactionEmoji.of("❌")); // :x:
+				});
+				return;
+			}
+			AudioInputStream stream = context.getResponse(String.join(" ", texts)).audioInputStream();
+			audioP.queue(stream);
+		}
 	}
 }
