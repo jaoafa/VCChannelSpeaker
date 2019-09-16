@@ -31,7 +31,7 @@ public class Event_MessageReceived {
 		IChannel channel = event.getChannel();
 		IUser user = event.getAuthor();
 		IMessage message = event.getMessage();
-		String text = event.getMessage().getContent();
+		String text = event.getMessage().getFormattedContent();
 
 		if (channel.getLongID() != 623153228267388958L) {
 			return;
