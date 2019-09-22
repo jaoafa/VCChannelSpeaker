@@ -38,6 +38,8 @@ public class Event_MessageReceived {
 		IChannel channel = event.getChannel();
 		IUser user = event.getAuthor();
 		IMessage message = event.getMessage();
+		if (message.isDeleted())
+			return;
 		String text = event.getMessage().getFormattedContent();
 		if (text.length() == 0) {
 			for (IEmbed embed : message.getEmbeds()) {
