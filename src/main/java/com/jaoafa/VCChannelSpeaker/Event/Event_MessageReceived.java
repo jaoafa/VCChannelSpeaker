@@ -72,7 +72,23 @@ public class Event_MessageReceived {
 		} else {
 			IVoiceChannel voice = event.getGuild().getConnectedVoiceChannel();
 			if (voice == null) {
-				Main.channel.join();
+				boolean bool = true;
+				for (IVoiceChannel c : event.getGuild().getVoiceChannels()) {
+					List<IUser> noBots = new ArrayList<>();
+					for (IUser u : c.getConnectedUsers()) {
+						if (u.isBot()) {
+							continue;
+						}
+						noBots.add(u);
+					}
+					if (noBots.size() != 0) {
+						c.join();
+						bool = false;
+						break;
+					}
+				}
+				if (bool)
+					Main.channel.join();
 			}
 		}
 		if (text.equalsIgnoreCase("/Clear")) {
@@ -121,7 +137,16 @@ public class Event_MessageReceived {
 					message.addReaction(ReactionEmoji.of("❌")); // :x:
 				});
 				return;
+			} catch (IllegalArgumentException e) {
+				RequestBuffer.request(() -> {
+					message.addReaction(ReactionEmoji.of("❌")); // :x:
+				});
+				return;
 			}
+		} else if (text.contains("http:") || text.contains("https:")) {
+			context = context.speed(400);
+		} else if (user.isBot()) {
+			context = context.speed(200);
 		}
 		List<String> pitchs = Arrays.stream(args).filter(
 				arg -> arg != null && arg.startsWith("pitch:")).collect(Collectors.toList());
@@ -132,6 +157,11 @@ public class Event_MessageReceived {
 				int pitch = Integer.parseInt(pitch_str);
 				context = context.pitch(pitch);
 			} catch (NumberFormatException e) {
+				RequestBuffer.request(() -> {
+					message.addReaction(ReactionEmoji.of("❌")); // :x:
+				});
+				return;
+			} catch (IllegalArgumentException e) {
 				RequestBuffer.request(() -> {
 					message.addReaction(ReactionEmoji.of("❌")); // :x:
 				});

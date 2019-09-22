@@ -18,7 +18,6 @@ public class Event_Leave {
 		System.out.println("VoiceLeave: " + event.getUser().getName() + " " + event.getVoiceChannel().getName());
 
 		AudioPlayer audioP = AudioPlayer.getAudioPlayerForGuild(event.getGuild());
-		audioP.clear();
 
 		List<IUser> noBots = new ArrayList<>();
 		for (IUser user : event.getVoiceChannel().getConnectedUsers()) {
@@ -29,6 +28,7 @@ public class Event_Leave {
 		}
 		System.out.println("VCLeft: " + noBots.size());
 		if (noBots.size() == 0) { // 自分含め
+			audioP.clear();
 			event.getVoiceChannel().leave();
 		}
 	}
@@ -41,7 +41,6 @@ public class Event_Leave {
 		System.out.println("VoiceLeave: " + event.getUser().getName() + " " + event.getOldChannel().getName());
 
 		AudioPlayer audioP = AudioPlayer.getAudioPlayerForGuild(event.getGuild());
-		audioP.clear();
 
 		List<IUser> noBots = new ArrayList<>();
 		for (IUser user : event.getOldChannel().getConnectedUsers()) {
@@ -52,6 +51,7 @@ public class Event_Leave {
 		}
 		System.out.println("VCLeft: " + noBots.size());
 		if (noBots.size() == 0) { // 自分含め
+			audioP.clear();
 			event.getOldChannel().leave();
 		}
 	}
