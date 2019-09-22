@@ -21,6 +21,8 @@ import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.obj.ReactionEmoji;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IEmbed;
+import sx.blah.discord.handle.obj.IEmbed.IEmbedField;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
@@ -37,6 +39,20 @@ public class Event_MessageReceived {
 		IUser user = event.getAuthor();
 		IMessage message = event.getMessage();
 		String text = event.getMessage().getFormattedContent();
+		if (text.length() == 0) {
+			for (IEmbed embed : message.getEmbeds()) {
+				if (embed.getDescription() != null) {
+					text = embed.getDescription();
+					break;
+				}
+				if (embed.getEmbedFields().size() != 0) {
+					text = "";
+					for (IEmbedField field : embed.getEmbedFields()) {
+						text += field.getValue() + " ";
+					}
+				}
+			}
+		}
 		text = EmojiParser.parseToAliases(text);
 		// 鯖絵文字
 		Pattern p = Pattern.compile(regex);
@@ -144,7 +160,7 @@ public class Event_MessageReceived {
 				return;
 			}
 		} else if (text.contains("http:") || text.contains("https:")) {
-			context = context.speed(400);
+			context = context.speed(200);
 		} else if (user.isBot()) {
 			context = context.speed(200);
 		}
